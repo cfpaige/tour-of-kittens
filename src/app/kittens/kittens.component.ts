@@ -11,22 +11,30 @@ import { MessageService } from '../message.service';
 export class KittensComponent implements OnInit {
 
   kittens: Kitten[];
-  selectedKitten: Kitten;
 
   constructor(private kittenService: KittenService, private messageService: MessageService) { }
-
-  getKittens(): void {
-    this.kittenService.getKittens()
-        .subscribe(kittens => this.kittens = kittens);
-  }
 
   ngOnInit() {
     this.getKittens();
   }
 
-  onSelect(kitten: Kitten): void {
-    this.selectedKitten = kitten;
-    this.messageService.add(`KittenService: Selected kitten id=${kitten.id}`);
+  getKittens(): void {
+    this.kittenService.getKittens()
+      .subscribe(kittens => this.kittens = kittens);
+  }
+
+  add(name: string): void {
+    name = name.trim();
+    if (!name) { return; }
+    this.kittenService.addKitten({ name } as Kitten)
+      .subscribe(kitten => {
+        this.kittens.push(kitten);
+      });
+  }
+
+  delete(kitten: Kitten): void {
+    this.kittens = this.kittens.filter(h => h !== kitten);
+    this.kittenService.deleteKitten(kitten).subscribe();
   }
 
 }
